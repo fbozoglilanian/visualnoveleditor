@@ -9,7 +9,7 @@ public class HudWizard : ScriptableWizard
 	public enum Position {LEFT, MIDDLE, RIGHT};
 
 
-	private DialogHud dialogHud;
+	private static DialogHud dialogHud = null;
 
 	public Sprite backgroundTexture;
 	public Color backgroundColor = new Color32( 0x90, 0x90, 0x90, 0xFF );
@@ -42,34 +42,34 @@ public class HudWizard : ScriptableWizard
     static void CreateWizard()
     {
         HudWizard hudWizard = ScriptableWizard.DisplayWizard<HudWizard> ("Create Hud", "Create", "Update");
-		if (GameObject.Find ("Dialog-Hud")) {
-			hudWizard.dialogHud = (DialogHud)((GameObject)GameObject.Find ("Dialog-Hud")).GetComponent<DialogHud> ();
-			hudWizard.backgroundTexture = hudWizard.dialogHud.background.sprite;
-			hudWizard.characterTexture = hudWizard.dialogHud.character.sprite;
-			hudWizard.showCharacterName = hudWizard.dialogHud.characterNamePanel.active;
-			hudWizard.backgroundColor = hudWizard.dialogHud.background.color;
+		if (dialogHud != null) {
+			dialogHud = (DialogHud)((GameObject)GameObject.Find ("Dialog-Hud")).GetComponent<DialogHud> ();
+			hudWizard.backgroundTexture = dialogHud.background.sprite;
+			hudWizard.characterTexture = dialogHud.character.sprite;
+			hudWizard.showCharacterName = dialogHud.characterNamePanel.active;
+			hudWizard.backgroundColor = dialogHud.background.color;
 
 			//Dialog components colors
-			hudWizard.dialogColor = hudWizard.dialogHud.dialogPanel.GetComponent<Image>().color;
-			hudWizard.characterNameColor = hudWizard.dialogHud.characterNamePanel.GetComponent<Image>().color;
-			hudWizard.optionsColor = hudWizard.dialogHud.optionPanel.GetComponent<Image>().color;
+			hudWizard.dialogColor = dialogHud.dialogPanel.GetComponent<Image>().color;
+			hudWizard.characterNameColor = dialogHud.characterNamePanel.GetComponent<Image>().color;
+			hudWizard.optionsColor = dialogHud.optionPanel.GetComponent<Image>().color;
 
 			//Current font size
-			hudWizard.characterNameFontSize = hudWizard.dialogHud.characterNamePanel.gameObject.GetComponentInChildren<Text> ().fontSize;
-			hudWizard.dialogFontSize = hudWizard.dialogHud.dialogPanel.gameObject.GetComponentInChildren<Text> ().fontSize;
-			hudWizard.optionsFontSize = hudWizard.dialogHud.optionPanel.gameObject.GetComponentInChildren<Text> ().fontSize;
+			hudWizard.characterNameFontSize = dialogHud.characterNamePanel.gameObject.GetComponentInChildren<Text> ().fontSize;
+			hudWizard.dialogFontSize = dialogHud.dialogPanel.gameObject.GetComponentInChildren<Text> ().fontSize;
+			hudWizard.optionsFontSize = dialogHud.optionPanel.gameObject.GetComponentInChildren<Text> ().fontSize;
 
 			//Current font type
-			hudWizard.characterNameFont = hudWizard.dialogHud.characterNamePanel.gameObject.GetComponentInChildren<Text> ().font;
-			hudWizard.dialogFont = hudWizard.dialogHud.dialogPanel.gameObject.GetComponentInChildren<Text> ().font;
-			hudWizard.optionsFont = hudWizard.dialogHud.optionPanel.gameObject.GetComponentInChildren<Text> ().font;
+			hudWizard.characterNameFont = dialogHud.characterNamePanel.gameObject.GetComponentInChildren<Text> ().font;
+			hudWizard.dialogFont = dialogHud.dialogPanel.gameObject.GetComponentInChildren<Text> ().font;
+			hudWizard.optionsFont = dialogHud.optionPanel.gameObject.GetComponentInChildren<Text> ().font;
 		}
     }
 
 
     void OnWizardCreate()
     {
-		if (dialogHud == null) {
+		if (dialogHud != null) {
 			DestroyImmediate (dialogHud);
 		}
 		dialogHud = (DialogHud) ((GameObject) Instantiate (Resources.Load ("DialogHud"))).GetComponent<DialogHud>();
@@ -91,11 +91,8 @@ public class HudWizard : ScriptableWizard
 
 	void OnWizardOtherButton()
 	{
-		if (GameObject.Find ("Dialog-Hud")) {
+		if (dialogHud == null && GameObject.Find ("Dialog-Hud")) {
 			dialogHud = (DialogHud)((GameObject)GameObject.Find ("Dialog-Hud")).GetComponent<DialogHud> ();
-		} else {
-			dialogHud = (DialogHud) ((GameObject) Instantiate (Resources.Load ("DialogHud"))).GetComponent<DialogHud>();
-			dialogHud.name = "Dialog-Hud";
 		}
 
 		dialogHud.background.sprite = backgroundTexture;
